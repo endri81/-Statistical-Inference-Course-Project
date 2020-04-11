@@ -1,5 +1,5 @@
 ---
-title: "Simulation Exercise"
+title: "Part1: Simulation Exercise"
 author: "Endri Raco"
 date: "4/10/2020"
 output: pdf_document
@@ -162,19 +162,19 @@ To show that our exponential distribution is approximately normal, We will creat
 
 The population distribution will be normal. Normal distribution requires two parameters for simulation, mean and variance. We will use the same values for these two parameters to mean and variance of exponential distribution. 
 
-So for normal distribution we will have $\mu = s_mean$ and $\sigma = $sample_sds. The normal distribution will be simulated using R function **dnorm(n, mean, sd)**.
+The normal distribution will be simulated using R function **dnorm(n, mean, sd)**.
 
 
 ```{r, exp-norm}
 # Plot histogram of generated sample means
-gg <- ggplot(df, aes(x=s_means)) + 
+fit_normal <- ggplot(df, aes(x=s_means)) + 
   geom_histogram(aes(y = ..density..), color = "black", fill = "steelblue", binwidth = 0.5, alpha = 0.2)+
   labs(title="Fitting normal distribution to exponential data") + 
   geom_density(aes(color = "Exponential")) +
   stat_function(aes(color = "Normal"), fun = dnorm, args=list( mean = th_mean, sd= 0.790)) +
   xlab("Sample Means") + ylab("Frequency") + labs("Sample Mean versus Theoretical Mean")+ 
   scale_colour_manual("Density", values = c("red", "blue"))
-gg
+fit_normal
 ```
 
 From the plot is very clear that **sample mean** of exponential distribution simulated 1000 times is very close to **theoretical mean** for a normal distribution.

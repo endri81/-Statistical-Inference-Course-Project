@@ -1,0 +1,148 @@
+---
+title: 'Part 2: Basic Inferential Data Analysis'
+author: "Endri Raco"
+date: "4/11/2020"
+output: pdf_document
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+if(!require(tidyverse)) install.packages('tidyverse', 
+repos = 'http://cran.us.r-project.org')
+if(!require(gridExtra)) install.packages('gridExtra', 
+repos = 'http://cran.us.r-project.org')
+if(!require(DataExplorer)) install.packages('DataExplorer', 
+repos = 'http://cran.us.r-project.org')
+## specify global chunk options
+knitr::opts_chunk$set(fig.width = 5, fig.height = 4, dpi = 300,
+                      out.width = '90%', fig.align = 'center',
+                      tidy.opts=list(width.cutoff=60),
+                      tidy=TRUE,
+                      cache = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+
+## Importing data 
+
+```{r, load-data}
+# Load ToothGrowth data
+library(datasets)
+data(ToothGrowth)
+```
+
+
+
+## Exploratory data analyses
+
+### Overview of the data
+
+Let's understand the dimensions of the dataset, variable names, overall missing summary and data types of each variables
+
+```{r, data-overview}
+## overview of the data; 
+glimpse(ToothGrowth)
+## structure of the data    
+introduce(ToothGrowth)
+```
+
+Let's show the result of **introduce** by plotting
+
+
+```{r, data-plot}
+plot_intro(ToothGrowth)
+```
+
+
+Now let's plot missing values
+
+```{r, missing-values}
+plot_missing(ToothGrowth)
+```
+
+
+## Data Summary
+
+Let's understand data distribution
+
+```{r, data-dist}
+# Plot histogram
+plot_histogram(ToothGrowth)
+```
+
+In similar way let's plot densities
+
+```{r, density}
+# Plot densities
+plot_density(ToothGrowth)
+```
+
+and boxplots:
+
+```{r, boxplot}
+plot_boxplot(ToothGrowth, by= 'supp',  ncol = 2)
+```
+
+Finally let's understand if variables are correlated:
+
+```{r, corr}
+# Correlation plot
+plot_correlation(ToothGrowth, cor_args = list( 'use' = 'complete.obs'))
+```
+
+## Comparision of tooth growth by supp and dose. 
+
+We will use **t.test** to check if there are group differences due to different supplement type. To perform this test we will assume initially unequal variances between the two groups
+
+```{r, t-test}
+# T test
+t.test(len ~ supp, data = ToothGrowth)
+```
+
+We get a $p-value = 0.06063$, and a confidence interval $(-0.1710156  7.5710156)$ which contains zero. 
+
+This indicates that we can not reject the null hypothesis. It means that the different supplement types have no effect on tooth length.
+
+Next step is to split the data into 3 subsets. Each subset corrensponds to one dosage. 
+
+
+```{r, data-sub}
+# Subset 1
+dosage_f <- subset(ToothGrowth, dose %in% c(0.5, 1.0))
+# Subset 2
+dosage_s <- subset(ToothGrowth, dose %in% c(0.5, 2.0))
+# Subset 3
+dosage_t<- subset(ToothGrowth, dose %in% c(1.0, 2.0))
+```
+
+Let's perform t-test for each of the subsets.
+
+```{r, t-sub1}
+# T test for subset 1
+t.test(len ~ dose, paired = F, var.equal = F, data = dosage_f)
+```
+
+The confidence interval $(-11.983781  -6.276219)$ gives reason the rejection of the null hypothesis. It means there is significant correlation between tooth length and dose levels.
+
+```{r, t-sub2}
+# T test for subset 2
+t.test(len ~ dose, paired = F, var.equal = F, data = dosage_s)
+```
+The confidence interval $( -18.15617 -12.83383)$ gives reason the rejection of the null hypothesis. It means there is significant correlation between tooth length and dose levels.
+
+```{r, t-sub3}
+# T test for subset 3
+t.test(len ~ dose, paired = F, var.equal = F, data = dosage_t)
+```
+
+The confidence interval $(-8.996481 -3.733519)$ gives reason the rejection of the null hypothesis. It means there is significant correlation between tooth length and dose levels.
+
+
+## Assumptions vs Conclusions
+    
+    - We made the assumptions that populations were indipendent.
+
+    - We reached the conclusion that increase of dosage leads to an increase in tooth growth 
+    
+    - Supplement has no effect on tooth growth.
+
